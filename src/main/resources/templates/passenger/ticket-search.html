@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Tra cứu vé</title>
+</head>
+<body>
+<h2>Tra cứu vé</h2>
+
+<p th:if="${successMessage}" style="color:green" th:text="${successMessage}"></p>
+<p th:if="${errorMessage}" style="color:red" th:text="${errorMessage}"></p>
+
+<form th:action="@{/tickets/search}" method="get">
+    <input type="text" name="code" placeholder="Mã vé">
+    <input type="text" name="phone" placeholder="SĐT">
+    <button type="submit">Tra cứu</button>
+</form>
+
+<div th:if="${ticket != null}">
+    <h3>Kết quả</h3>
+    <table border="1" cellpadding="8">
+        <tr><td>Mã vé</td><td th:text="${ticket.ticketCode}"></td></tr>
+        <tr><td>Khách hàng</td><td th:text="${ticket.customerName}"></td></tr>
+        <tr><td>SĐT</td><td th:text="${ticket.phone}"></td></tr>
+        <tr><td>Email</td><td th:text="${ticket.email}"></td></tr>
+        <tr><td>Biển số</td><td th:text="${ticket.licensePlate}"></td></tr>
+        <tr><td>Loại xe</td><td th:text="${ticket.busType}"></td></tr>
+        <tr><td>Tài xế</td><td th:text="${ticket.driverName}"></td></tr>
+        <tr><td>Tuyến</td><td th:text="${ticket.fromLocation + ' → ' + ticket.toLocation}"></td></tr>
+        <tr><td>Giờ đi</td><td th:text="${ticket.departureTime}"></td></tr>
+        <tr><td>Ghế</td><td th:text="${ticket.seatNumber}"></td></tr>
+        <tr><td>Trạng thái</td><td th:text="${ticket.status}"></td></tr>
+        <tr><td>Thời gian đặt</td><td th:text="${ticket.bookingTime}"></td></tr>
+        <tr><td>Tổng tiền</td><td th:text="${ticket.totalPrice}"></td></tr>
+    </table>
+
+    <form th:if="${ticket.status.name() == 'PENDING'}"
+          th:action="@{'/tickets/' + ${ticket.ticketId} + '/cancel'}"
+          method="post">
+        <button type="submit">Hủy vé</button>
+    </form>
+</div>
+
+<p><a href="/">Về trang chủ</a></p>
+</body>
+</html>

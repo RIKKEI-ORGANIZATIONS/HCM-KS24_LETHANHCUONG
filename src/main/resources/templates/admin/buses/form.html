@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Bus Form</title>
+</head>
+<body>
+<h2 th:text="${bus.id == null ? 'Thêm xe' : 'Sửa xe'}"></h2>
+
+<form th:action="@{/admin/buses/save}" th:object="${bus}" method="post">
+    <input type="hidden" th:field="*{id}">
+
+    <div>
+        <label>Biển số</label>
+        <input type="text" th:field="*{licensePlate}">
+        <p th:if="${#fields.hasErrors('licensePlate')}" th:errors="*{licensePlate}" style="color:red"></p>
+    </div>
+
+    <div>
+        <label>Loại xe</label>
+        <input type="text" th:field="*{busType}">
+        <p th:if="${#fields.hasErrors('busType')}" th:errors="*{busType}" style="color:red"></p>
+    </div>
+
+    <div>
+        <label>Số ghế</label>
+        <input type="number" th:field="*{totalSeats}">
+        <p th:if="${#fields.hasErrors('totalSeats')}" th:errors="*{totalSeats}" style="color:red"></p>
+    </div>
+
+    <div>
+        <label>Tài xế</label>
+        <input type="text" th:field="*{driverName}">
+        <p th:if="${#fields.hasErrors('driverName')}" th:errors="*{driverName}" style="color:red"></p>
+    </div>
+
+    <button type="submit">Lưu</button>
+</form>
+
+<p><a th:href="@{/admin/buses}">Quay lại</a></p>
+</body>
+</html>

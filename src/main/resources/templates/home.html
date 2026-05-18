@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Bus Ticket Pro</title>
+</head>
+<body>
+<h2>Bus Ticket Pro</h2>
+
+<p>
+    <a th:href="@{/login}">Đăng nhập</a> |
+    <a th:href="@{/register}">Đăng ký</a> |
+    <a th:href="@{/profile}">Profile</a> |
+    <a th:href="@{/admin/buses}">Admin Bus</a> |
+    <a th:href="@{/staff/tickets}">Staff Tickets</a> |
+    <a th:href="@{/tickets/search}">Tra cứu vé</a>
+</p>
+
+<h3>Tra cứu chuyến xe</h3>
+<form th:action="@{/}" method="get">
+    <select name="fromId">
+        <option value="">-- Điểm đi --</option>
+        <option th:each="l : ${locations}" th:value="${l.id}" th:text="${l.name}"
+                th:selected="${fromId != null and fromId == l.id}"></option>
+    </select>
+
+    <select name="toId">
+        <option value="">-- Điểm đến --</option>
+        <option th:each="l : ${locations}" th:value="${l.id}" th:text="${l.name}"
+                th:selected="${toId != null and toId == l.id}"></option>
+    </select>
+
+    <input type="date" name="date" th:value="${date}">
+    <button type="submit">Tìm</button>
+</form>
+
+<h3>Danh sách chuyến xe</h3>
+<table border="1" cellpadding="8">
+    <tr>
+        <th>ID</th>
+        <th>Tuyến</th>
+        <th>Xe</th>
+        <th>Giờ đi</th>
+        <th>Giá</th>
+        <th>Ghế</th>
+    </tr>
+    <tr th:each="trip : ${trips}">
+        <td th:text="${trip.id}"></td>
+        <td th:text="${trip.route.fromLocation.name + ' → ' + trip.route.toLocation.name}"></td>
+        <td th:text="${trip.bus.licensePlate + ' / ' + trip.bus.busType}"></td>
+        <td th:text="${trip.departureTime}"></td>
+        <td th:text="${trip.price}"></td>
+        <td>
+            <a th:href="@{'/trips/' + ${trip.id} + '/seats'}">Xem ghế</a>
+        </td>
+    </tr>
+</table>
+</body>
+</html>

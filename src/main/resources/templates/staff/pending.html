@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <title>Pending Tickets</title>
+
+  <style>
+    body{
+      font-family: Arial;
+      padding:20px;
+      background:#f5f5f5;
+    }
+
+    h2{
+      margin-bottom:20px;
+    }
+
+    table{
+      width:100%;
+      border-collapse: collapse;
+      background:white;
+    }
+
+    th, td{
+      padding:12px;
+      border:1px solid #ddd;
+    }
+
+    th{
+      background:#007bff;
+      color:white;
+    }
+
+    .btn{
+      border:none;
+      padding:8px 14px;
+      border-radius:5px;
+      color:white;
+      cursor:pointer;
+      text-decoration:none;
+      display:inline-block;
+    }
+
+    .confirm{
+      background:green;
+    }
+
+    .cancel{
+      background:red;
+    }
+
+    .back{
+      background:#6c757d;
+      margin-bottom:20px;
+    }
+
+    .message{
+      padding:10px;
+      margin-bottom:15px;
+      border-radius:5px;
+    }
+
+    .success{
+      background:#d4edda;
+      color:#155724;
+    }
+
+    .error{
+      background:#f8d7da;
+      color:#721c24;
+    }
+  </style>
+</head>
+<body>
+
+<h2>Pending Tickets</h2>
+
+<a href="/" class="btn back">
+  ← Quay lại trang chủ
+</a>
+
+<div th:if="${successMessage}" class="message success">
+  <span th:text="${successMessage}"></span>
+</div>
+
+<div th:if="${errorMessage}" class="message error">
+  <span th:text="${errorMessage}"></span>
+</div>
+
+<table>
+  <thead>
+  <tr>
+    <th>ID</th>
+    <th>Customer</th>
+    <th>Phone</th>
+    <th>Seat</th>
+    <th>Total</th>
+    <th>Status</th>
+    <th>Action</th>
+  </tr>
+  </thead>
+
+  <tbody>
+  <tr th:each="ticket : ${tickets}">
+    <td th:text="${ticket.id}"></td>
+    <td th:text="${ticket.customerName}"></td>
+    <td th:text="${ticket.phone}"></td>
+    <td th:text="${ticket.seat.seatNumber}"></td>
+    <td th:text="${ticket.totalPrice}"></td>
+    <td th:text="${ticket.status}"></td>
+
+    <td style="display:flex; gap:10px;">
+
+      <form th:action="@{'/staff/tickets/' + ${ticket.id} + '/confirm'}"
+            method="post">
+
+        <button class="btn confirm" type="submit">
+          Confirm
+        </button>
+      </form>
+
+      <form th:action="@{'/staff/tickets/' + ${ticket.id} + '/cancel'}"
+            method="post">
+
+        <button class="btn cancel" type="submit">
+          Cancel
+        </button>
+      </form>
+
+    </td>
+  </tr>
+  </tbody>
+</table>
+
+</body>
+</html>

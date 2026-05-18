@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Seat Map</title>
+</head>
+<body>
+<h2>Sơ đồ ghế</h2>
+
+<p th:if="${successMessage}" style="color:green" th:text="${successMessage}"></p>
+<p th:if="${errorMessage}" style="color:red" th:text="${errorMessage}"></p>
+
+<p>
+    <b>Tuyến:</b>
+    <span th:text="${trip.route.fromLocation.name + ' → ' + trip.route.toLocation.name}"></span>
+</p>
+<p>
+    <b>Giờ đi:</b>
+    <span th:text="${trip.departureTime}"></span>
+</p>
+<p>
+    <b>Xe:</b>
+    <span th:text="${trip.bus.licensePlate + ' / ' + trip.bus.busType}"></span>
+</p>
+
+<form th:action="@{/book}" th:object="${bookingForm}" method="post">
+    <input type="hidden" th:field="*{tripId}">
+
+    <div>
+        <label>Họ tên</label>
+        <input type="text" th:field="*{customerName}">
+        <p th:if="${#fields.hasErrors('customerName')}" th:errors="*{customerName}" style="color:red"></p>
+    </div>
+
+    <div>
+        <label>SĐT</label>
+        <input type="text" th:field="*{phone}">
+        <p th:if="${#fields.hasErrors('phone')}" th:errors="*{phone}" style="color:red"></p>
+    </div>
+
+    <div>
+        <label>Email</label>
+        <input type="text" th:field="*{email}">
+        <p th:if="${#fields.hasErrors('email')}" th:errors="*{email}" style="color:red"></p>
+    </div>
+
+    <h4>Chọn ghế</h4>
+    <div th:each="seat : ${seats}">
+        <label>
+            <input type="radio"
+                   th:field="*{seatId}"
+                   th:value="${seat.id}"
+                   th:disabled="${seat.status.name() != 'AVAILABLE'}">
+            <span th:text="${seat.seatNumber + ' - ' + seat.status}"></span>
+        </label>
+        <br>
+    </div>
+
+    <p th:if="${#fields.hasErrors('seatId')}" th:errors="*{seatId}" style="color:red"></p>
+
+    <button type="submit">Đặt vé</button>
+</form>
+
+<p><a href="/">Quay lại</a></p>
+</body>
+</html>

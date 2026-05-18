@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Profile</title>
+</head>
+<body>
+<h2>Hồ sơ cá nhân</h2>
+
+<p th:if="${param.success}" style="color:green">Cập nhật thành công</p>
+
+<form th:action="@{/profile}" th:object="${form}" method="post">
+    <div>
+        <label>Họ tên</label>
+        <input type="text" th:field="*{fullName}">
+        <p th:if="${#fields.hasErrors('fullName')}" th:errors="*{fullName}" style="color:red"></p>
+    </div>
+
+    <div>
+        <label>SĐT</label>
+        <input type="text" th:field="*{phone}">
+        <p th:if="${#fields.hasErrors('phone')}" th:errors="*{phone}" style="color:red"></p>
+    </div>
+
+    <div>
+        <label>Email</label>
+        <input type="text" th:field="*{email}">
+        <p th:if="${#fields.hasErrors('email')}" th:errors="*{email}" style="color:red"></p>
+    </div>
+
+    <div>
+        <label>Địa chỉ</label>
+        <input type="text" th:field="*{address}">
+    </div>
+
+    <button type="submit">Lưu</button>
+</form>
+
+<p><a th:href="@{/}">Về trang chủ</a></p>
+</body>
+</html>
