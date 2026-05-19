@@ -2,65 +2,749 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Seat Map</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sơ đồ ghế | Bus Ticket Pro</title>
+
+    <style>
+        :root {
+            --primary: #2563eb;
+            --secondary: #06b6d4;
+            --success: #16a34a;
+            --danger: #dc2626;
+            --warning: #f59e0b;
+
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+            --border: rgba(148, 163, 184, 0.35);
+
+            --radius-md: 18px;
+            --radius-lg: 28px;
+
+            --shadow-sm: 0 10px 30px rgba(15, 23, 42, 0.1);
+            --shadow-md: 0 24px 70px rgba(15, 23, 42, 0.16);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            min-height: 100vh;
+            font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            color: var(--text-main);
+            background:
+                    radial-gradient(circle at top left, rgba(37, 99, 235, 0.24), transparent 34%),
+                    radial-gradient(circle at bottom right, rgba(6, 182, 212, 0.24), transparent 32%),
+                    linear-gradient(135deg, #eff6ff 0%, #f8fafc 48%, #ecfeff 100%);
+            padding: 32px;
+        }
+
+        .page {
+            width: min(1180px, 100%);
+            margin: 0 auto;
+        }
+
+        .hero {
+            position: relative;
+            overflow: hidden;
+            padding: 34px;
+            border-radius: var(--radius-lg);
+            color: white;
+            background:
+                    linear-gradient(135deg, rgba(37, 99, 235, 0.96), rgba(6, 182, 212, 0.92)),
+                    linear-gradient(135deg, #2563eb, #06b6d4);
+            box-shadow: var(--shadow-md);
+            margin-bottom: 24px;
+        }
+
+        .hero::before {
+            content: "";
+            position: absolute;
+            width: 240px;
+            height: 240px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.16);
+            top: -90px;
+            right: -70px;
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .brand {
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 18px;
+            font-weight: 900;
+            margin-bottom: 28px;
+        }
+
+        .brand-icon {
+            width: 44px;
+            height: 44px;
+            border-radius: 16px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(12px);
+        }
+
+        .hero h2 {
+            font-size: clamp(32px, 5vw, 48px);
+            font-weight: 900;
+            letter-spacing: -1.2px;
+            margin-bottom: 10px;
+        }
+
+        .hero p {
+            color: rgba(255, 255, 255, 0.88);
+            line-height: 1.7;
+            max-width: 650px;
+        }
+
+        .alerts {
+            display: grid;
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+
+        .alert {
+            padding: 15px 18px;
+            border-radius: 18px;
+            font-weight: 800;
+            border: 1px solid transparent;
+            box-shadow: var(--shadow-sm);
+            background: rgba(255, 255, 255, 0.86);
+            backdrop-filter: blur(16px);
+        }
+
+        .alert-success {
+            color: #166534;
+            background: #dcfce7;
+            border-color: #bbf7d0;
+        }
+
+        .alert-error {
+            color: #991b1b;
+            background: #fee2e2;
+            border-color: #fecaca;
+        }
+
+        .layout {
+            display: grid;
+            grid-template-columns: 0.85fr 1.15fr;
+            gap: 24px;
+            align-items: start;
+        }
+
+        .card {
+            border-radius: var(--radius-lg);
+            background: rgba(255, 255, 255, 0.86);
+            border: 1px solid rgba(255, 255, 255, 0.75);
+            box-shadow: var(--shadow-sm);
+            backdrop-filter: blur(18px);
+            overflow: hidden;
+        }
+
+        .card-header {
+            padding: 24px 26px 12px;
+        }
+
+        .card-title {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 22px;
+            font-weight: 900;
+            letter-spacing: -0.4px;
+        }
+
+        .title-icon {
+            width: 42px;
+            height: 42px;
+            border-radius: 14px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            box-shadow: 0 10px 22px rgba(37, 99, 235, 0.24);
+        }
+
+        .card-subtitle {
+            margin-top: 8px;
+            color: var(--text-muted);
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        .card-body {
+            padding: 22px 26px 26px;
+        }
+
+        .trip-info {
+            display: grid;
+            gap: 16px;
+        }
+
+        .info-item {
+            display: flex;
+            gap: 14px;
+            padding: 17px;
+            border-radius: 20px;
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+        }
+
+        .info-icon {
+            width: 42px;
+            height: 42px;
+            border-radius: 14px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background: #eff6ff;
+            color: var(--primary);
+            flex-shrink: 0;
+        }
+
+        .info-item b {
+            display: block;
+            font-size: 13px;
+            color: var(--text-muted);
+            margin-bottom: 4px;
+        }
+
+        .info-item span {
+            font-size: 16px;
+            font-weight: 850;
+            color: var(--text-main);
+            line-height: 1.5;
+        }
+
+        form {
+            display: grid;
+            gap: 18px;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 18px;
+        }
+
+        .field {
+            display: grid;
+            gap: 8px;
+        }
+
+        .field.full {
+            grid-column: 1 / -1;
+        }
+
+        label.form-label {
+            font-size: 14px;
+            font-weight: 850;
+            color: #334155;
+        }
+
+        .input-wrap {
+            position: relative;
+        }
+
+        .input-icon {
+            position: absolute;
+            left: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #94a3b8;
+            pointer-events: none;
+        }
+
+        input[type="text"],
+        input[type="email"] {
+            width: 100%;
+            height: 52px;
+            border: 1px solid var(--border);
+            border-radius: 17px;
+            background: rgba(255, 255, 255, 0.94);
+            padding: 0 16px 0 48px;
+            font-size: 15px;
+            color: var(--text-main);
+            outline: none;
+            transition: 0.22s ease;
+        }
+
+        input::placeholder {
+            color: #94a3b8;
+        }
+
+        input:focus {
+            border-color: var(--primary);
+            background: white;
+            box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.14);
+        }
+
+        .error {
+            color: var(--danger);
+            font-size: 13px;
+            font-weight: 750;
+            line-height: 1.5;
+        }
+
+        .seat-section {
+            margin-top: 6px;
+        }
+
+        .seat-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .seat-header h4 {
+            font-size: 19px;
+            font-weight: 900;
+        }
+
+        .legend {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            font-size: 13px;
+            color: var(--text-muted);
+            font-weight: 800;
+        }
+
+        .legend-item {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 999px;
+            display: inline-block;
+        }
+
+        .dot.available {
+            background: var(--success);
+        }
+
+        .dot.booked {
+            background: #94a3b8;
+        }
+
+        .seat-map {
+            position: relative;
+            padding: 22px;
+            border-radius: 24px;
+            background:
+                    linear-gradient(180deg, #f8fafc, #eef6ff);
+            border: 1px solid #dbeafe;
+        }
+
+        .driver {
+            width: 100%;
+            height: 44px;
+            margin-bottom: 20px;
+            border-radius: 18px;
+            background: linear-gradient(135deg, #0f172a, #1e293b);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            font-weight: 900;
+            letter-spacing: 0.4px;
+        }
+
+        .seats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(74px, 1fr));
+            gap: 14px;
+        }
+
+        .seat-option {
+            cursor: pointer;
+        }
+
+        .seat-option input[type="radio"] {
+            position: absolute;
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .seat-card {
+            min-height: 78px;
+            padding: 12px 10px;
+            border-radius: 18px;
+            background: white;
+            border: 2px solid #dbeafe;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            text-align: center;
+            transition: 0.22s ease;
+            box-shadow: 0 8px 20px rgba(15, 23, 42, 0.06);
+        }
+
+        .seat-number {
+            font-size: 17px;
+            font-weight: 950;
+            color: var(--text-main);
+        }
+
+        .seat-status {
+            font-size: 11px;
+            font-weight: 900;
+            padding: 4px 8px;
+            border-radius: 999px;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+
+        .status-available {
+            color: #166534;
+            background: #dcfce7;
+        }
+
+        .status-unavailable {
+            color: #475569;
+            background: #e2e8f0;
+        }
+
+        .seat-option:hover .seat-card {
+            transform: translateY(-3px);
+            border-color: var(--primary);
+            box-shadow: 0 14px 28px rgba(37, 99, 235, 0.16);
+        }
+
+        .seat-option input[type="radio"]:checked + .seat-card {
+            border-color: var(--success);
+            background: linear-gradient(135deg, #dcfce7, #f0fdf4);
+            box-shadow: 0 16px 34px rgba(22, 163, 74, 0.24);
+            transform: translateY(-3px);
+        }
+
+        .seat-option input[type="radio"]:disabled + .seat-card {
+            cursor: not-allowed;
+            opacity: 0.62;
+            background: #f1f5f9;
+            border-color: #cbd5e1;
+            box-shadow: none;
+        }
+
+        .seat-option input[type="radio"]:disabled + .seat-card .seat-number {
+            color: #64748b;
+        }
+
+        .seat-option:has(input[type="radio"]:disabled) {
+            cursor: not-allowed;
+        }
+
+        .submit-btn {
+            height: 56px;
+            border: none;
+            border-radius: 18px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 950;
+            color: white;
+            background: linear-gradient(135deg, var(--success), #22c55e);
+            box-shadow: 0 16px 34px rgba(22, 163, 74, 0.28);
+            transition: 0.25s ease;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 22px 44px rgba(22, 163, 74, 0.36);
+        }
+
+        .submit-btn:active {
+            transform: translateY(0);
+        }
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            margin-top: 22px;
+            min-height: 48px;
+            padding: 0 18px;
+            border-radius: 999px;
+            color: #475569;
+            background: rgba(255, 255, 255, 0.78);
+            border: 1px solid rgba(148, 163, 184, 0.3);
+            text-decoration: none;
+            font-weight: 900;
+            box-shadow: var(--shadow-sm);
+            transition: 0.22s ease;
+        }
+
+        .back-link:hover {
+            color: var(--primary);
+            transform: translateY(-2px);
+            background: white;
+        }
+
+        @media (max-width: 980px) {
+            .layout {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 700px) {
+            body {
+                padding: 16px;
+            }
+
+            .hero {
+                padding: 26px;
+            }
+
+            .card-header,
+            .card-body {
+                padding-left: 18px;
+                padding-right: 18px;
+            }
+
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .seats-grid {
+                grid-template-columns: repeat(3, minmax(70px, 1fr));
+            }
+
+            .seat-header {
+                align-items: flex-start;
+                flex-direction: column;
+            }
+        }
+
+        @media (max-width: 460px) {
+            .seats-grid {
+                grid-template-columns: repeat(2, minmax(70px, 1fr));
+            }
+
+            .seat-map {
+                padding: 16px;
+            }
+        }
+    </style>
 </head>
+
 <body>
-<h2>Sơ đồ ghế</h2>
 
-<p th:if="${successMessage}" style="color:green" th:text="${successMessage}"></p>
-<p th:if="${errorMessage}" style="color:red" th:text="${errorMessage}"></p>
+<div class="page">
 
-<p>
-    <b>Tuyến:</b>
-    <span th:text="${trip.route.fromLocation.name + ' → ' + trip.route.toLocation.name}"></span>
-</p>
-<p>
-    <b>Giờ đi:</b>
-    <span th:text="${trip.departureTime}"></span>
-</p>
-<p>
-    <b>Xe:</b>
-    <span th:text="${trip.bus.licensePlate + ' / ' + trip.bus.busType}"></span>
-</p>
+    <section class="hero">
+        <div class="hero-content">
+            <div class="brand">
+                <span class="brand-icon">🚌</span>
+                <span>Bus Ticket Pro</span>
+            </div>
 
-<form th:action="@{/book}" th:object="${bookingForm}" method="post">
-    <input type="hidden" th:field="*{tripId}">
+            <h2>Sơ đồ ghế</h2>
+            <p>Chọn ghế còn trống, nhập thông tin hành khách và hoàn tất đặt vé cho chuyến đi của bạn.</p>
+        </div>
+    </section>
 
-    <div>
-        <label>Họ tên</label>
-        <input type="text" th:field="*{customerName}">
-        <p th:if="${#fields.hasErrors('customerName')}" th:errors="*{customerName}" style="color:red"></p>
+    <div class="alerts">
+        <p th:if="${successMessage}" class="alert alert-success" th:text="${successMessage}"></p>
+        <p th:if="${errorMessage}" class="alert alert-error" th:text="${errorMessage}"></p>
     </div>
 
-    <div>
-        <label>SĐT</label>
-        <input type="text" th:field="*{phone}">
-        <p th:if="${#fields.hasErrors('phone')}" th:errors="*{phone}" style="color:red"></p>
+    <div class="layout">
+
+        <aside class="card">
+            <div class="card-header">
+                <h3 class="card-title">
+                    <span class="title-icon">📍</span>
+                    Thông tin chuyến
+                </h3>
+                <p class="card-subtitle">Kiểm tra lại thông tin chuyến xe trước khi đặt vé.</p>
+            </div>
+
+            <div class="card-body">
+                <div class="trip-info">
+                    <div class="info-item">
+                        <span class="info-icon">🛣️</span>
+                        <div>
+                            <b>Tuyến</b>
+                            <span th:text="${trip.route.fromLocation.name + ' → ' + trip.route.toLocation.name}"></span>
+                        </div>
+                    </div>
+
+                    <div class="info-item">
+                        <span class="info-icon">🕒</span>
+                        <div>
+                            <b>Giờ đi</b>
+                            <span th:text="${trip.departureTime}"></span>
+                        </div>
+                    </div>
+
+                    <div class="info-item">
+                        <span class="info-icon">🚌</span>
+                        <div>
+                            <b>Xe</b>
+                            <span th:text="${trip.bus.licensePlate + ' / ' + trip.bus.busType}"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <section class="card">
+            <div class="card-header">
+                <h3 class="card-title">
+                    <span class="title-icon">🎫</span>
+                    Đặt vé
+                </h3>
+                <p class="card-subtitle">Vui lòng nhập đúng thông tin để nhân viên có thể xác nhận vé.</p>
+            </div>
+
+            <div class="card-body">
+                <form th:action="@{/book}" th:object="${bookingForm}" method="post">
+
+                    <input type="hidden" th:field="*{tripId}">
+
+                    <!-- Nếu Spring Security bật CSRF, nên giữ dòng này -->
+                    <input type="hidden"
+                           th:if="${_csrf != null}"
+                           th:name="${_csrf.parameterName}"
+                           th:value="${_csrf.token}">
+
+                    <div class="form-grid">
+
+                        <!-- HỌ TÊN -->
+                        <div class="field">
+                            <label class="form-label">Họ tên</label>
+
+                            <div class="input-wrap">
+                                <span class="input-icon">🪪</span>
+
+                                <input type="text"
+                                       th:field="*{customerName}"
+                                       placeholder="Họ tên"
+                                       readonly>
+                            </div>
+
+                            <p class="error"
+                               th:if="${#fields.hasErrors('customerName')}"
+                               th:errors="*{customerName}">
+                            </p>
+                        </div>
+
+                        <!-- SĐT -->
+                        <div class="field">
+                            <label class="form-label">Số điện thoại</label>
+
+                            <div class="input-wrap">
+                                <span class="input-icon">📞</span>
+
+                                <input type="text"
+                                       th:field="*{phone}"
+                                       placeholder="Số điện thoại"
+                                       readonly>
+                            </div>
+
+                            <p class="error"
+                               th:if="${#fields.hasErrors('phone')}"
+                               th:errors="*{phone}">
+                            </p>
+                        </div>
+
+                        <!-- EMAIL -->
+                        <div class="field full">
+                            <label class="form-label">Email</label>
+
+                            <div class="input-wrap">
+                                <span class="input-icon">✉️</span>
+
+                                <input type="email"
+                                       th:field="*{email}"
+                                       placeholder="Email"
+                                       readonly>
+                            </div>
+
+                            <p class="error"
+                               th:if="${#fields.hasErrors('email')}"
+                               th:errors="*{email}">
+                            </p>
+                        </div>
+
+                    </div>
+
+                    <div class="seat-section">
+                        <div class="seat-header">
+                            <h4>Chọn ghế</h4>
+
+                            <div class="legend">
+                                <span class="legend-item">
+                                    <span class="dot available"></span>
+                                    Còn trống
+                                </span>
+                                <span class="legend-item">
+                                    <span class="dot booked"></span>
+                                    Không khả dụng
+                                </span>
+                            </div>
+                        </div>
+
+                        <div class="seat-map">
+                            <div class="driver">ĐẦU XE / TÀI XẾ</div>
+
+                            <div class="seats-grid">
+                                <label class="seat-option" th:each="seat : ${seats}">
+                                    <input type="radio"
+                                           th:field="*{seatId}"
+                                           th:value="${seat.id}"
+                                           th:disabled="${seat.status.name() != 'AVAILABLE'}">
+
+                                    <span class="seat-card">
+                                        <span class="seat-number" th:text="${seat.seatNumber}"></span>
+
+                                        <span class="seat-status"
+                                              th:classappend="${seat.status.name() == 'AVAILABLE'} ? ' status-available' : ' status-unavailable'"
+                                              th:text="${seat.status.name() == 'AVAILABLE'} ? 'Còn trống' : 'Đã đặt'">
+                                        </span>
+                                    </span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <p class="error"
+                           th:if="${#fields.hasErrors('seatId')}"
+                           th:errors="*{seatId}">
+                        </p>
+                    </div>
+
+                    <button class="submit-btn" type="submit">Đặt vé ngay</button>
+                </form>
+            </div>
+        </section>
+
     </div>
 
-    <div>
-        <label>Email</label>
-        <input type="text" th:field="*{email}">
-        <p th:if="${#fields.hasErrors('email')}" th:errors="*{email}" style="color:red"></p>
-    </div>
+    <a class="back-link" th:href="@{/}">
+        ← Quay lại trang chủ
+    </a>
 
-    <h4>Chọn ghế</h4>
-    <div th:each="seat : ${seats}">
-        <label>
-            <input type="radio"
-                   th:field="*{seatId}"
-                   th:value="${seat.id}"
-                   th:disabled="${seat.status.name() != 'AVAILABLE'}">
-            <span th:text="${seat.seatNumber + ' - ' + seat.status}"></span>
-        </label>
-        <br>
-    </div>
+</div>
 
-    <p th:if="${#fields.hasErrors('seatId')}" th:errors="*{seatId}" style="color:red"></p>
-
-    <button type="submit">Đặt vé</button>
-</form>
-
-<p><a href="/">Quay lại</a></p>
 </body>
 </html>

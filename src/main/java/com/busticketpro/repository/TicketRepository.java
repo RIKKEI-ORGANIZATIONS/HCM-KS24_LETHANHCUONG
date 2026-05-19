@@ -13,7 +13,7 @@ import java.util.Optional;
 public interface TicketRepository extends JpaRepository<Ticket, Long> {
 
     List<Ticket> findByStatusOrderByBookingTimeAsc(TicketStatus status);
-
+    List<Ticket> findByStatus(TicketStatus status);
     Optional<Ticket> findByTicketCodeAndPhone(String ticketCode, String phone);
 
     @Query("""
@@ -43,6 +43,12 @@ public interface TicketRepository extends JpaRepository<Ticket, Long> {
         join t.seat s
         where t.ticketCode = :code and t.phone = :phone
     """)
+
     Optional<TicketDetailDto> findDetailByTicketCodeAndPhone(@Param("code") String code,
                                                              @Param("phone") String phone);
+    @Query("SELECT SUM(t.totalPrice) FROM Ticket t WHERE t.status = com.busticketpro.enums.TicketStatus.PAID")
+    Double sumRevenue();
+
+    List<Ticket> findByPhoneOrderByBookingTimeDesc(String phone);
+
 }

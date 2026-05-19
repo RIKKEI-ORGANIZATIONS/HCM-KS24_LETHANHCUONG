@@ -34,14 +34,29 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+
         http.csrf(AbstractHttpConfigurer::disable);
 
         http.authenticationProvider(authenticationProvider());
 
         http.authorizeHttpRequests(auth -> auth
-                .requestMatchers("/", "/login", "/register", "/tickets/search", "/trips/**", "/error").permitAll()
-                .requestMatchers("/templates/admin/**").hasRole("ADMIN")
-                .requestMatchers("/staff/**").hasAnyRole("STAFF", "ADMIN")
+
+                // public
+                .requestMatchers("/", "/login", "/register", "/tickets/search", "/trips/**", "/error")
+                .permitAll()
+
+                // passenger
+                .requestMatchers("/book", "/tickets/**", "/profile")
+                .hasAnyRole("PASSENGER", "STAFF", "ADMIN")
+
+                // staff
+                .requestMatchers("/staff/**")
+                .hasRole("STAFF")
+
+                // admin
+                .requestMatchers("/admin/**")
+                .hasRole("ADMIN")
+
                 .anyRequest().authenticated()
         );
 

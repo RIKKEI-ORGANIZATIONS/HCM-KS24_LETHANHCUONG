@@ -7,7 +7,11 @@
 <body>
 <h2 th:text="${bus.id == null ? 'Thêm xe' : 'Sửa xe'}"></h2>
 
-<form th:action="@{/admin/buses/save}" th:object="${bus}" method="post">
+<form th:action="@{${bus.id} != null
+        ? '/admin/buses/update'
+        : '/admin/buses/save'}"
+      th:object="${bus}"
+      method="post">
     <input type="hidden" th:field="*{id}">
 
     <div>

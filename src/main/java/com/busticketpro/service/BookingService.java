@@ -1,6 +1,8 @@
-package com.busticketpro.service;
+
+        package com.busticketpro.service;
 
 import com.busticketpro.dto.BookingRequest;
+import com.busticketpro.entity.AppUser;
 import com.busticketpro.entity.Seat;
 import com.busticketpro.entity.Ticket;
 import com.busticketpro.entity.Trip;
@@ -23,55 +25,63 @@ public class BookingService {
     private final TripRepository tripRepository;
     private final SeatRepository seatRepository;
     private final TicketRepository ticketRepository;
+    private final UserService userService;
 
     @Transactional
-    public Ticket bookTicket(BookingRequest request) {
+    public Ticket bookTicket(
+            BookingRequest request,
+            String username
+    ) {
+
+        AppUser user = userService.getByUsername(username);
 
         Trip trip = tripRepository.findById(request.getTripId())
-                .orElseThrow(() -> new RuntimeException("Không tìm thấy chuyến xe"));
+                .orElseThrow(() ->
+                        new RuntimeException("Không tìm thấy chuyến xe"));
 
-        // ❗ Không cho đặt vé chuyến đã chạy
-        if (trip.getDepartureTime().isBefore(LocalDateTime.now())) {
-            throw new RuntimeException("Chuyến xe đã khởi hành");
-        }
-
-        // ❗ LOCK GHẾ
         Seat seat = seatRepository.findLockedById(request.getSeatId())
-                .orElseThrow(() -> new RuntimeException("Không tìm thấy ghế"));
+                .orElseThrow(() ->
+                        new RuntimeException("Không tìm thấy ghế"));
 
+        // CHECK GHẾ THUỘC CHUYẾN
         if (!seat.getTrip().getId().equals(trip.getId())) {
             throw new RuntimeException("Ghế không thuộc chuyến xe này");
         }
 
-        // ❗ CHỐNG DOUBLE BOOKING
-        if (seat.getStatus() == SeatStatus.BOOKED
-                || seat.getStatus() == SeatStatus.PENDING) {
-            throw new RuntimeException("Ghế đã được đặt hoặc đang giữ");
+        // CHECK GHẾ TRỐNG
+        if (seat.getStatus() != SeatStatus.AVAILABLE) {
+            throw new RuntimeException("Ghế đã được đặt");
         }
 
-        // update ghế
+        // UPDATE GHẾ
         seat.setStatus(SeatStatus.PENDING);
-        seatRepository.save(seat);
 
-        // tạo ticket
+        // TẠO VÉ
         Ticket ticket = new Ticket();
-        ticket.setTicketCode(generateCode());
-        ticket.setCustomerName(request.getCustomerName());
-        ticket.setPhone(request.getPhone());
-        ticket.setEmail(request.getEmail());
+
+        ticket.setTicketCode("TK" + System.currentTimeMillis());
+
+        // LẤY THÔNG TIN TỪ ACCOUNT
+        ticket.setCustomerName(user.getFullName());
+        ticket.setPhone(user.getPhone());
+        ticket.setEmail(user.getEmail());
+
         ticket.setTrip(trip);
         ticket.setSeat(seat);
-        ticket.setTotalPrice(trip.getPrice());
-        ticket.setStatus(TicketStatus.PENDING);
-        ticket.setBookingTime(LocalDateTime.now());
 
+        ticket.setTotalPrice(trip.getPrice());
+
+        ticket.setStatus(TicketStatus.PENDING);
+
+        ticket.setBookingTime(LocalDateTime.now());
+        ticket.setExpiredAt(
+                LocalDateTime.now().plusMinutes(15)
+        );
         ticketRepository.save(ticket);
 
-        return ticket;
-    }
+        seatRepository.save(seat);
 
-    private String generateCode() {
-        return "TK" + System.currentTimeMillis();
+        return ticket;
     }
 
     public Trip getTripById(Long tripId) {
@@ -83,4 +93,23 @@ public class BookingService {
     public List<Seat> getSeatsByTrip(Long tripId) {
         return seatRepository.findByTrip_IdOrderBySeatNumberAsc(tripId);
     }
+
+    @Transactional
+    public void cancelBooking(Long ticketId) {
+
+        Ticket ticket = ticketRepository.findById(ticketId)
+                .orElseThrow(() ->
+                        new RuntimeException("Không tìm thấy vé"));
+
+        ticket.setStatus(TicketStatus.CANCELLED);
+
+        Seat seat = ticket.getSeat();
+
+        seat.setStatus(SeatStatus.AVAILABLE);
+
+        seatRepository.save(seat);
+
+        ticketRepository.save(ticket);
+    }
 }
+

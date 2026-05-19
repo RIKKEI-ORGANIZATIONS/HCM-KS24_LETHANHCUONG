@@ -42,6 +42,23 @@ public class TicketController {
         } catch (RuntimeException ex) {
             redirectAttributes.addFlashAttribute("errorMessage", ex.getMessage());
         }
-        return "redirect:/tickets/search";
+        return "redirect:/my-tickets";
     }
+
+    @GetMapping("/my-tickets")
+    public String myTickets(
+            Authentication authentication,
+            Model model
+    ) {
+
+        String username = authentication.getName();
+
+        model.addAttribute(
+                "tickets",
+                ticketService.getMyTickets(username)
+        );
+
+        return "passenger/my-tickets";
+    }
+
 }

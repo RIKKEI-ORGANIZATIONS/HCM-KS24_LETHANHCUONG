@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Báo cáo thống kê</title>
+</head>
+<body>
+
+<h2>📊 Báo cáo thống kê</h2>
+
+<p><a th:href="@{/}">⬅ Trang chủ</a></p>
+
+<table border="1" cellpadding="10">
+  <tr>
+    <th>Chỉ số</th>
+    <th>Giá trị</th>
+  </tr>
+
+  <tr>
+    <td>Tổng số người dùng</td>
+    <td th:text="${totalUsers}"></td>
+  </tr>
+
+  <tr>
+    <td>Tổng số chuyến xe</td>
+    <td th:text="${totalTrips}"></td>
+  </tr>
+
+  <tr>
+    <td>Tổng số vé</td>
+    <td th:text="${totalTickets}"></td>
+  </tr>
+
+  <tr>
+    <td>Tổng doanh thu</td>
+    <td th:text="${totalRevenue} + ' VNĐ'"></td>
+  </tr>
+</table>
+
+</body>
+</html>

@@ -1,9 +1,11 @@
-package com.busticketpro.controller;
+
+        package com.busticketpro.controller;
 
 import com.busticketpro.dto.BookingRequest;
 import com.busticketpro.service.BookingService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -21,9 +23,11 @@ public class BookingController {
             @Valid @ModelAttribute("bookingForm") BookingRequest form,
             BindingResult result,
             RedirectAttributes redirectAttributes,
-            Model model
+            Model model,
+            Authentication authentication
     ) {
 
+        // VALIDATE
         if (result.hasErrors()) {
 
             model.addAttribute(
@@ -40,7 +44,11 @@ public class BookingController {
         }
 
         try {
-            bookingService.bookTicket(form);
+
+            bookingService.bookTicket(
+                    form,
+                    authentication.getName()
+            );
 
             redirectAttributes.addFlashAttribute(
                     "successMessage",
@@ -59,4 +67,31 @@ public class BookingController {
             return "redirect:/passenger/" + form.getTripId() + "/seats";
         }
     }
+
+    @PostMapping("/cancel-booking/{ticketId}")
+    public String cancelBooking(
+            @PathVariable Long ticketId,
+            RedirectAttributes redirectAttributes
+    ) {
+
+        try {
+
+            bookingService.cancelBooking(ticketId);
+
+            redirectAttributes.addFlashAttribute(
+                    "successMessage",
+                    "Hủy vé thành công"
+            );
+
+        } catch (RuntimeException ex) {
+
+            redirectAttributes.addFlashAttribute(
+                    "errorMessage",
+                    ex.getMessage()
+            );
+        }
+
+        return "redirect:/";
+    }
 }
+

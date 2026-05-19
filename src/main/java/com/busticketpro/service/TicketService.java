@@ -24,7 +24,10 @@ public class TicketService {
     private final TicketRepository ticketRepository;
     private final SeatRepository seatRepository;
     private final UserService userService;
-
+    @Transactional(readOnly = true)
+    public List<Ticket> findConfirmedTickets() {
+        return ticketRepository.findByStatusOrderByBookingTimeAsc(TicketStatus.PAID);
+    }
     @Transactional(readOnly = true)
     public Optional<TicketDetailDto> searchDetail(String code, String phone) {
         return ticketRepository.findDetailByTicketCodeAndPhone(code, phone);
@@ -77,13 +80,13 @@ public class TicketService {
         Ticket ticket = ticketRepository.findById(ticketId)
                 .orElseThrow(() -> new RuntimeException("Không tìm thấy vé"));
 
-        // ❗ CHECK ROLE
-        if (!user.getRole().name().equals("PASSENGER")) {
-            throw new RuntimeException("Không có quyền");
-        }
+//        // ❗ CHECK ROLE
+//        if (!user.getRole().name().equals("PASSENGER")) {
+//            throw new RuntimeException("Không có quyền");
+//        }
 
         // ❗ CHECK ĐÚNG NGƯỜI
-        if (!Objects.equals(ticket.getPhone(), user.getPhone())) {
+        if (!ticket.getCustomerName().equals(user.getFullName())) {
             throw new RuntimeException("Bạn không có quyền hủy vé này");
         }
 
@@ -106,4 +109,16 @@ public class TicketService {
         seatRepository.save(seat);
         ticketRepository.save(ticket);
     }
+
+    @Transactional(readOnly = true)
+    public List<Ticket> getMyTickets(String username) {
+
+        AppUser user = userService.getByUsername(username);
+
+        return ticketRepository.findByPhoneOrderByBookingTimeDesc(
+                user.getPhone()
+        );
+    }
+
+
 }

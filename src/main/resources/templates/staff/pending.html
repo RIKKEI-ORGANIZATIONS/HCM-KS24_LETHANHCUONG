@@ -1,33 +1,43 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-  <title>Pending Tickets</title>
+  <meta charset="UTF-8">
+  <title>Quản lý vé xe</title>
 
   <style>
+
     body{
-      font-family: Arial;
+      font-family: Arial, sans-serif;
       padding:20px;
       background:#f5f5f5;
     }
 
     h2{
       margin-bottom:20px;
+      color:#333;
     }
 
     table{
       width:100%;
       border-collapse: collapse;
       background:white;
+      margin-bottom:40px;
+      box-shadow:0 2px 8px rgba(0,0,0,0.1);
     }
 
     th, td{
       padding:12px;
       border:1px solid #ddd;
+      text-align:center;
     }
 
     th{
       background:#007bff;
       color:white;
+    }
+
+    tr:nth-child(even){
+      background:#fafafa;
     }
 
     .btn{
@@ -36,8 +46,7 @@
       border-radius:5px;
       color:white;
       cursor:pointer;
-      text-decoration:none;
-      display:inline-block;
+      font-weight:bold;
     }
 
     .confirm{
@@ -51,6 +60,8 @@
     .back{
       background:#6c757d;
       margin-bottom:20px;
+      display:inline-block;
+      text-decoration:none;
     }
 
     .message{
@@ -68,15 +79,28 @@
       background:#f8d7da;
       color:#721c24;
     }
+
+    .paid{
+      color:green;
+      font-weight:bold;
+    }
+
+    .pending{
+      color:orange;
+      font-weight:bold;
+    }
+
+    .cancelled{
+      color:red;
+      font-weight:bold;
+    }
+
   </style>
 </head>
+
 <body>
 
-<h2>Pending Tickets</h2>
-
-<a href="/" class="btn back">
-  ← Quay lại trang chủ
-</a>
+<a href="/" class="btn back">← Quay lại trang chủ</a>
 
 <div th:if="${successMessage}" class="message success">
   <span th:text="${successMessage}"></span>
@@ -86,49 +110,143 @@
   <span th:text="${errorMessage}"></span>
 </div>
 
+<!-- ================= VÉ CHỜ THANH TOÁN ================= -->
+
+<h2>Danh sách vé chờ thanh toán</h2>
+
 <table>
+
   <thead>
   <tr>
-    <th>ID</th>
-    <th>Customer</th>
-    <th>Phone</th>
-    <th>Seat</th>
-    <th>Total</th>
-    <th>Status</th>
-    <th>Action</th>
+    <th>Mã vé</th>
+    <th>Khách hàng</th>
+    <th>SĐT</th>
+    <th>Email</th>
+    <th>Tuyến xe</th>
+    <th>Giờ khởi hành</th>
+    <th>Biển số xe</th>
+    <th>Ghế</th>
+    <th>Tổng tiền</th>
+    <th>Trạng thái</th>
+    <th>Thao tác</th>
   </tr>
   </thead>
 
   <tbody>
-  <tr th:each="ticket : ${tickets}">
-    <td th:text="${ticket.id}"></td>
-    <td th:text="${ticket.customerName}"></td>
-    <td th:text="${ticket.phone}"></td>
-    <td th:text="${ticket.seat.seatNumber}"></td>
-    <td th:text="${ticket.totalPrice}"></td>
-    <td th:text="${ticket.status}"></td>
 
-    <td style="display:flex; gap:10px;">
+  <tr th:each="ticket : ${pendingTickets}">
+
+    <td th:text="${ticket.ticketCode}"></td>
+
+    <td th:text="${ticket.customerName}"></td>
+
+    <td th:text="${ticket.phone}"></td>
+
+    <td th:text="${ticket.email}"></td>
+
+    <td th:text="${ticket.trip.route.fromLocation.name + ' → ' + ticket.trip.route.toLocation.name}"></td>
+
+    <td th:text="${ticket.trip.departureTime}"></td>
+
+    <td th:text="${ticket.trip.bus.licensePlate}"></td>
+
+    <td th:text="${ticket.seat.seatNumber}"></td>
+
+    <td th:text="${#numbers.formatDecimal(ticket.totalPrice, 0, 'COMMA', 0, 'POINT') + ' VNĐ'}"></td>
+
+    <td>
+      <span class="pending">CHỜ THANH TOÁN</span>
+    </td>
+
+    <td style="display:flex; gap:10px; justify-content:center;">
+
+      <!-- XÁC NHẬN ĐÃ THANH TOÁN -->
 
       <form th:action="@{'/staff/tickets/' + ${ticket.id} + '/confirm'}"
             method="post">
 
-        <button class="btn confirm" type="submit">
-          Confirm
+        <button class="btn confirm"
+                onclick="return confirm('Xác nhận khách đã thanh toán?')">
+
+          Xác nhận
+
         </button>
+
       </form>
+
+      <!-- HỦY VÉ -->
 
       <form th:action="@{'/staff/tickets/' + ${ticket.id} + '/cancel'}"
             method="post">
 
-        <button class="btn cancel" type="submit">
-          Cancel
+        <button class="btn cancel"
+                onclick="return confirm('Bạn có chắc muốn hủy vé này?')">
+
+          Hủy vé
+
         </button>
+
       </form>
 
     </td>
+
   </tr>
+
   </tbody>
+
+</table>
+
+<!-- ================= VÉ ĐÃ THANH TOÁN ================= -->
+
+<h2>Danh sách vé đã thanh toán</h2>
+
+<table>
+
+  <thead>
+  <tr>
+    <th>Mã vé</th>
+    <th>Khách hàng</th>
+    <th>SĐT</th>
+    <th>Email</th>
+    <th>Tuyến xe</th>
+    <th>Giờ khởi hành</th>
+    <th>Biển số xe</th>
+    <th>Ghế</th>
+    <th>Tổng tiền</th>
+    <th>Trạng thái</th>
+  </tr>
+  </thead>
+
+  <tbody>
+
+  <tr th:each="ticket : ${confirmedTickets}">
+
+    <td th:text="${ticket.ticketCode}"></td>
+
+    <td th:text="${ticket.customerName}"></td>
+
+    <td th:text="${ticket.phone}"></td>
+
+    <td th:text="${ticket.email}"></td>
+
+    <td th:text="${ticket.trip.route.fromLocation.name + ' → ' + ticket.trip.route.toLocation.name}"></td>
+
+    <td th:text="${ticket.trip.departureTime}"></td>
+
+    <td th:text="${ticket.trip.bus.licensePlate}"></td>
+
+    <td th:text="${ticket.seat.seatNumber}"></td>
+
+    <td th:text="${#numbers.formatDecimal(ticket.totalPrice, 0, 'COMMA', 0, 'POINT') + ' VNĐ'}"></td>
+
+    <td>
+      <span class="paid">ĐÃ THANH TOÁN</span>
+    </td>
+
+  </tr>
+
+  </tbody>
+
 </table>
 
 </body>

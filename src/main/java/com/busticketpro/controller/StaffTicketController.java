@@ -15,8 +15,11 @@ public class StaffTicketController {
     private final TicketService ticketService;
 
     @GetMapping
-    public String pendingTickets(Model model) {
-        model.addAttribute("tickets", ticketService.findPendingTickets());
+    public String tickets(Model model) {
+
+        model.addAttribute("pendingTickets", ticketService.findPendingTickets());
+        model.addAttribute("confirmedTickets", ticketService.findConfirmedTickets());
+
         return "staff/pending";
     }
 

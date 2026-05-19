@@ -1,59 +1,602 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Bus Ticket Pro</title>
+
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-dark: #1d4ed8;
+            --secondary: #06b6d4;
+            --success: #16a34a;
+            --danger: #dc2626;
+            --warning: #f59e0b;
+
+            --bg-main: #f8fafc;
+            --bg-card: rgba(255, 255, 255, 0.86);
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+            --border: rgba(148, 163, 184, 0.35);
+
+            --shadow-sm: 0 8px 24px rgba(15, 23, 42, 0.08);
+            --shadow-md: 0 18px 45px rgba(15, 23, 42, 0.14);
+
+            --radius-sm: 12px;
+            --radius-md: 18px;
+            --radius-lg: 28px;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            min-height: 100vh;
+            font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            color: var(--text-main);
+            background:
+                    radial-gradient(circle at top left, rgba(37, 99, 235, 0.24), transparent 34%),
+                    radial-gradient(circle at top right, rgba(6, 182, 212, 0.22), transparent 32%),
+                    linear-gradient(135deg, #eff6ff 0%, #f8fafc 45%, #ecfeff 100%);
+            padding: 32px;
+        }
+
+        .page {
+            width: min(1180px, 100%);
+            margin: 0 auto;
+        }
+
+        .hero {
+            position: relative;
+            overflow: hidden;
+            padding: 34px;
+            border-radius: var(--radius-lg);
+            background:
+                    linear-gradient(135deg, rgba(37, 99, 235, 0.95), rgba(6, 182, 212, 0.9)),
+                    linear-gradient(135deg, #2563eb, #06b6d4);
+            color: white;
+            box-shadow: var(--shadow-md);
+            margin-bottom: 24px;
+        }
+
+        .hero::before {
+            content: "";
+            position: absolute;
+            width: 240px;
+            height: 240px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.18);
+            top: -90px;
+            right: -60px;
+        }
+
+        .hero::after {
+            content: "";
+            position: absolute;
+            width: 160px;
+            height: 160px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.14);
+            bottom: -80px;
+            left: 30%;
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .hero h2 {
+            font-size: clamp(30px, 5vw, 48px);
+            font-weight: 850;
+            letter-spacing: -1.2px;
+            margin-bottom: 10px;
+        }
+
+        .hero p {
+            max-width: 620px;
+            color: rgba(255, 255, 255, 0.88);
+            font-size: 16px;
+            line-height: 1.7;
+        }
+
+        .nav-bar {
+            position: relative;
+            z-index: 1;
+            margin-top: 26px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .nav-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .nav-link {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 42px;
+            padding: 10px 16px;
+            border-radius: 999px;
+            color: white;
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 14px;
+            border: 1px solid rgba(255, 255, 255, 0.32);
+            background: rgba(255, 255, 255, 0.16);
+            backdrop-filter: blur(14px);
+            transition: 0.25s ease;
+        }
+
+        .nav-link:hover {
+            transform: translateY(-2px);
+            background: rgba(255, 255, 255, 0.28);
+            box-shadow: 0 10px 24px rgba(15, 23, 42, 0.18);
+        }
+
+        .nav-link.logout {
+            background: rgba(220, 38, 38, 0.24);
+            border-color: rgba(255, 255, 255, 0.4);
+        }
+
+        .grid {
+            display: grid;
+            gap: 24px;
+        }
+
+        .card {
+            border-radius: var(--radius-lg);
+            background: var(--bg-card);
+            border: 1px solid rgba(255, 255, 255, 0.7);
+            box-shadow: var(--shadow-sm);
+            backdrop-filter: blur(18px);
+            overflow: hidden;
+        }
+
+        .card-header {
+            padding: 24px 26px 12px;
+        }
+
+        .card-title {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 22px;
+            font-weight: 850;
+            letter-spacing: -0.4px;
+        }
+
+        .card-title .icon {
+            width: 42px;
+            height: 42px;
+            border-radius: 14px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            box-shadow: 0 10px 22px rgba(37, 99, 235, 0.24);
+        }
+
+        .card-subtitle {
+            margin-top: 8px;
+            color: var(--text-muted);
+            font-size: 14px;
+        }
+
+        .card-body {
+            padding: 22px 26px 26px;
+        }
+
+        .search-form {
+            display: grid;
+            grid-template-columns: 1fr 1fr 220px auto;
+            gap: 14px;
+            align-items: end;
+        }
+
+        .field {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        label {
+            font-size: 13px;
+            font-weight: 800;
+            color: #334155;
+        }
+
+        select,
+        input[type="date"] {
+            width: 100%;
+            height: 50px;
+            border-radius: 16px;
+            border: 1px solid var(--border);
+            background: rgba(255, 255, 255, 0.88);
+            color: var(--text-main);
+            padding: 0 15px;
+            font-size: 15px;
+            outline: none;
+            transition: 0.22s ease;
+        }
+
+        select:focus,
+        input[type="date"]:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.14);
+            background: white;
+        }
+
+        .btn {
+            height: 50px;
+            border: none;
+            border-radius: 16px;
+            padding: 0 24px;
+            cursor: pointer;
+            font-size: 15px;
+            font-weight: 850;
+            color: white;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            box-shadow: 0 12px 28px rgba(37, 99, 235, 0.28);
+            transition: 0.25s ease;
+            white-space: nowrap;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 18px 36px rgba(37, 99, 235, 0.36);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .table-wrap {
+            width: 100%;
+            overflow-x: auto;
+            border-radius: 22px;
+            border: 1px solid var(--border);
+        }
+
+        table {
+            width: 100%;
+            min-width: 820px;
+            border-collapse: collapse;
+            background: white;
+        }
+
+        thead {
+            background: linear-gradient(135deg, #0f172a, #1e293b);
+            color: white;
+        }
+
+        th {
+            padding: 17px 18px;
+            text-align: left;
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: 0.7px;
+            white-space: nowrap;
+        }
+
+        td {
+            padding: 17px 18px;
+            border-bottom: 1px solid #e2e8f0;
+            color: #1e293b;
+            font-size: 15px;
+            vertical-align: middle;
+        }
+
+        tbody tr {
+            transition: 0.2s ease;
+        }
+
+        tbody tr:hover {
+            background: #f8fafc;
+        }
+
+        tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        .trip-id {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 42px;
+            height: 32px;
+            padding: 0 10px;
+            border-radius: 999px;
+            background: #eff6ff;
+            color: var(--primary);
+            font-weight: 850;
+        }
+
+        .route {
+            font-weight: 800;
+        }
+
+        .bus-info {
+            color: #475569;
+            font-weight: 650;
+        }
+
+        .time-badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 7px 12px;
+            border-radius: 999px;
+            background: #ecfeff;
+            color: #0e7490;
+            font-weight: 800;
+            white-space: nowrap;
+        }
+
+        .price {
+            font-weight: 900;
+            color: var(--success);
+            white-space: nowrap;
+        }
+
+        .seat-link {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 9px 14px;
+            border-radius: 999px;
+            color: white;
+            text-decoration: none;
+            font-weight: 800;
+            font-size: 14px;
+            background: linear-gradient(135deg, #16a34a, #22c55e);
+            box-shadow: 0 10px 22px rgba(22, 163, 74, 0.22);
+            transition: 0.22s ease;
+            white-space: nowrap;
+        }
+
+        .seat-link:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 14px 28px rgba(22, 163, 74, 0.3);
+        }
+
+        .empty {
+            padding: 34px;
+            text-align: center;
+            color: var(--text-muted);
+            background: #f8fafc;
+            border-radius: 22px;
+            border: 1px dashed #cbd5e1;
+        }
+
+        .footer-note {
+            margin-top: 22px;
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 13px;
+        }
+
+        @media (max-width: 900px) {
+            body {
+                padding: 20px;
+            }
+
+            .search-form {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .btn {
+                grid-column: 1 / -1;
+            }
+        }
+
+        @media (max-width: 640px) {
+            body {
+                padding: 14px;
+            }
+
+            .hero {
+                padding: 26px;
+                border-radius: 24px;
+            }
+
+            .search-form {
+                grid-template-columns: 1fr;
+            }
+
+            .card-header,
+            .card-body {
+                padding-left: 18px;
+                padding-right: 18px;
+            }
+
+            .nav-link {
+                width: 100%;
+            }
+
+            .nav-group {
+                width: 100%;
+            }
+        }
+    </style>
 </head>
+
 <body>
-<h2>Bus Ticket Pro</h2>
 
-<p>
-    <a th:href="@{/login}">Đăng nhập</a> |
-    <a th:href="@{/register}">Đăng ký</a> |
-    <a th:href="@{/profile}">Profile</a> |
-    <a th:href="@{/admin/buses}">Admin Bus</a> |
-    <a th:href="@{/staff/tickets}">Staff Tickets</a> |
-    <a th:href="@{/tickets/search}">Tra cứu vé</a>
-</p>
+<div class="page">
 
-<h3>Tra cứu chuyến xe</h3>
-<form th:action="@{/}" method="get">
-    <select name="fromId">
-        <option value="">-- Điểm đi --</option>
-        <option th:each="l : ${locations}" th:value="${l.id}" th:text="${l.name}"
-                th:selected="${fromId != null and fromId == l.id}"></option>
-    </select>
+    <section class="hero">
+        <div class="hero-content">
+            <h2>Bus Ticket Pro</h2>
+            <p>Đặt vé xe nhanh chóng, tra cứu chuyến tiện lợi và quản lý hành trình của bạn chỉ trong vài thao tác.</p>
 
-    <select name="toId">
-        <option value="">-- Điểm đến --</option>
-        <option th:each="l : ${locations}" th:value="${l.id}" th:text="${l.name}"
-                th:selected="${toId != null and toId == l.id}"></option>
-    </select>
+            <div class="nav-bar">
 
-    <input type="date" name="date" th:value="${date}">
-    <button type="submit">Tìm</button>
-</form>
+                <!-- CHƯA LOGIN -->
+                <span class="nav-group" sec:authorize="isAnonymous()">
+                    <a class="nav-link" th:href="@{/login}">Đăng nhập</a>
+                    <a class="nav-link" th:href="@{/register}">Đăng ký</a>
+                </span>
 
-<h3>Danh sách chuyến xe</h3>
-<table border="1" cellpadding="8">
-    <tr>
-        <th>ID</th>
-        <th>Tuyến</th>
-        <th>Xe</th>
-        <th>Giờ đi</th>
-        <th>Giá</th>
-        <th>Ghế</th>
-    </tr>
-    <tr th:each="trip : ${trips}">
-        <td th:text="${trip.id}"></td>
-        <td th:text="${trip.route.fromLocation.name + ' → ' + trip.route.toLocation.name}"></td>
-        <td th:text="${trip.bus.licensePlate + ' / ' + trip.bus.busType}"></td>
-        <td th:text="${trip.departureTime}"></td>
-        <td th:text="${trip.price}"></td>
-        <td>
-            <a th:href="@{'/trips/' + ${trip.id} + '/seats'}">Xem ghế</a>
-        </td>
-    </tr>
-</table>
+                <!-- ĐÃ LOGIN -->
+                <span class="nav-group" sec:authorize="isAuthenticated()">
+
+                    <a class="nav-link" th:href="@{/profile}">Profile</a>
+
+                    <!-- ADMIN -->
+                    <span class="nav-group" sec:authorize="hasRole('ADMIN')">
+                        <a class="nav-link" th:href="@{/admin/buses}">Quản lý xe</a>
+                        <a class="nav-link" th:href="@{/admin/report}">Báo cáo</a>
+                    </span>
+
+                    <!-- STAFF -->
+                    <span class="nav-group" sec:authorize="hasRole('STAFF') and !hasRole('ADMIN')">
+                        <a class="nav-link" th:href="@{/staff/tickets}">Vé chờ thanh toán</a>
+                    </span>
+
+                    <!-- PASSENGER -->
+                    <span class="nav-group" sec:authorize="hasRole('PASSENGER')">
+                        <a class="nav-link" th:href="@{/tickets/search}">Tra cứu vé</a>
+                        <a class="nav-link" th:href="@{/my-tickets}">Vé của tôi</a>
+                    </span>
+
+                    <a class="nav-link logout" th:href="@{/logout}">Đăng xuất</a>
+
+                </span>
+            </div>
+        </div>
+    </section>
+
+    <main class="grid">
+
+        <!-- FORM TÌM CHUYẾN -->
+        <section class="card">
+            <div class="card-header">
+                <h3 class="card-title">
+                    <span class="icon">🔎</span>
+                    Tra cứu chuyến xe
+                </h3>
+                <p class="card-subtitle">Chọn điểm đi, điểm đến và ngày khởi hành để tìm chuyến phù hợp.</p>
+            </div>
+
+            <div class="card-body">
+                <form class="search-form" th:action="@{/}" method="get">
+
+                    <div class="field">
+                        <label>Điểm đi</label>
+                        <select name="fromId">
+                            <option value="">-- Điểm đi --</option>
+                            <option th:each="l : ${locations}"
+                                    th:value="${l.id}"
+                                    th:text="${l.name}"
+                                    th:selected="${fromId != null and fromId == l.id}">
+                            </option>
+                        </select>
+                    </div>
+
+                    <div class="field">
+                        <label>Điểm đến</label>
+                        <select name="toId">
+                            <option value="">-- Điểm đến --</option>
+                            <option th:each="l : ${locations}"
+                                    th:value="${l.id}"
+                                    th:text="${l.name}"
+                                    th:selected="${toId != null and toId == l.id}">
+                            </option>
+                        </select>
+                    </div>
+
+                    <div class="field">
+                        <label>Ngày đi</label>
+                        <input type="date" name="date" th:value="${date}">
+                    </div>
+
+                    <button class="btn" type="submit">Tìm chuyến</button>
+
+                </form>
+            </div>
+        </section>
+
+        <!-- DANH SÁCH CHUYẾN -->
+        <section class="card">
+            <div class="card-header">
+                <h3 class="card-title">
+                    <span class="icon">🚌</span>
+                    Danh sách chuyến xe
+                </h3>
+                <p class="card-subtitle">Các chuyến xe hiện có theo điều kiện tìm kiếm của bạn.</p>
+            </div>
+
+            <div class="card-body">
+
+                <div class="table-wrap" th:if="${trips != null and !trips.isEmpty()}">
+                    <table>
+                        <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Tuyến</th>
+                            <th>Xe</th>
+                            <th>Giờ đi</th>
+                            <th>Giá</th>
+                            <th>Ghế</th>
+                        </tr>
+                        </thead>
+
+                        <tbody>
+                        <tr th:each="trip : ${trips}">
+                            <td>
+                                <span class="trip-id" th:text="${trip.id}"></span>
+                            </td>
+
+                            <td class="route"
+                                th:text="${trip.route.fromLocation.name + ' → ' + trip.route.toLocation.name}">
+                            </td>
+
+                            <td class="bus-info"
+                                th:text="${trip.bus.licensePlate + ' / ' + trip.bus.busType}">
+                            </td>
+
+                            <td>
+                                <span class="time-badge" th:text="${trip.departureTime}"></span>
+                            </td>
+
+                            <td>
+                                <span class="price" th:text="${trip.price}"></span>
+                            </td>
+
+                            <td>
+                                <a class="seat-link"
+                                   th:href="@{'/trips/' + ${trip.id} + '/seats'}">
+                                    Xem ghế
+                                </a>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="empty" th:if="${trips == null or trips.isEmpty()}">
+                    Chưa có chuyến xe phù hợp. Hãy thử thay đổi điểm đi, điểm đến hoặc ngày khởi hành.
+                </div>
+
+            </div>
+        </section>
+
+    </main>
+
+    <p class="footer-note">© 2026 Bus Ticket Pro</p>
+
+</div>
+
 </body>
 </html>
