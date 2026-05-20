@@ -75,7 +75,7 @@ public class BookingService {
 
         ticket.setBookingTime(LocalDateTime.now());
         ticket.setExpiredAt(
-                LocalDateTime.now().plusMinutes(15)
+                LocalDateTime.now().plusSeconds(15)
         );
         ticketRepository.save(ticket);
 
