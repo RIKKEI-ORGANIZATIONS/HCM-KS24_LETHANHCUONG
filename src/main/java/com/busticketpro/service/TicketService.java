@@ -119,6 +119,11 @@ public class TicketService {
                 user.getPhone()
         );
     }
-
+    @Transactional(readOnly = true)
+    public List<Ticket> findCancelledTickets() {
+        return ticketRepository.findByStatusOrderByBookingTimeAsc(
+                TicketStatus.CANCELLED
+        );
+    }
 
 }

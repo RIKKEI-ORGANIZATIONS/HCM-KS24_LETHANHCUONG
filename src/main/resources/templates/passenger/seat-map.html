@@ -593,7 +593,8 @@
                         <span class="info-icon">🕒</span>
                         <div>
                             <b>Giờ đi</b>
-                            <span th:text="${trip.departureTime}"></span>
+                            <span th:text="${#temporals.format(trip.departureTime, 'dd/MM/yyyy HH:mm')}">
+                            </span>
                         </div>
                     </div>
 

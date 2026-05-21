@@ -75,8 +75,8 @@ public class DataInitializer implements CommandLineRunner {
         }
 
         if (busRepository.count() == 0) {
-            busRepository.save(new Bus(null, "51B-12345", "45 chỗ", 10, "Nguyen Van A"));
-            busRepository.save(new Bus(null, "43B-67890", "29 chỗ", 10, "Tran Van B"));
+            busRepository.save(new Bus(null, "51B-12345", "45 chỗ", 10, "Nguyen Van A","Thành Bưởi"));
+            busRepository.save(new Bus(null, "43B-67890", "29 chỗ", 10, "Tran Van B","Phương trang"));
         }
 
         if (tripRepository.count() == 0) {

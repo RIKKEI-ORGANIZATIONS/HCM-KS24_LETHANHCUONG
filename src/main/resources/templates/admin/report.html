@@ -3,6 +3,101 @@
 <head>
   <meta charset="UTF-8">
   <title>Báo cáo thống kê</title>
+  <style>
+    /* Reset cơ bản và thiết lập font chữ */
+    body {
+      font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      background-color: #f4f7f6;
+      color: #333;
+      margin: 0;
+      padding: 40px 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    /* Tiêu đề */
+    h2 {
+      color: #2c3e50;
+      font-size: 28px;
+      margin-bottom: 10px;
+    }
+
+    /* Nút quay lại trang chủ */
+    p a {
+      display: inline-block;
+      text-decoration: none;
+      color: #3498db;
+      font-weight: 600;
+      padding: 8px 16px;
+      background-color: #eaf2f8;
+      border-radius: 6px;
+      transition: all 0.3s ease;
+      margin-bottom: 20px;
+    }
+
+    p a:hover {
+      background-color: #3498db;
+      color: #fff;
+      transform: translateY(-2px);
+    }
+
+    /* Thiết kế bảng dạng Card */
+    table {
+      border-collapse: collapse;
+      width: 100%;
+      max-width: 600px; /* Đảm bảo bảng không quá to trên màn hình lớn */
+      background-color: #ffffff;
+      border-radius: 10px;
+      overflow: hidden; /* Cần thiết để border-radius hoạt động với table */
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+    }
+
+    /* Header của bảng */
+    th {
+      background-color: #2c3e50;
+      color: #ffffff;
+      text-align: left;
+      padding: 16px 20px;
+      font-size: 16px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    /* Các ô dữ liệu */
+    td {
+      padding: 16px 20px;
+      border-bottom: 1px solid #eef0f2;
+      font-size: 15px;
+    }
+
+    /* Căn lề và làm nổi bật cột giá trị (cột số 2) */
+    th:nth-child(2),
+    td:nth-child(2) {
+      text-align: right;
+    }
+
+    td:nth-child(2) {
+      font-weight: bold;
+      color: #27ae60; /* Màu xanh lá cho các con số mang tính tích cực */
+      font-size: 16px;
+    }
+
+    /* Hiệu ứng sọc ngựa vằn và hover */
+    tr:nth-child(even) td {
+      background-color: #fdfdfd;
+    }
+
+    tr:hover td {
+      background-color: #f4f6f7;
+      transition: background-color 0.2s ease;
+    }
+
+    /* Xóa viền ở dòng cuối cùng */
+    tr:last-child td {
+      border-bottom: none;
+    }
+  </style>
 </head>
 <body>
 
@@ -10,7 +105,8 @@
 
 <p><a th:href="@{/}">⬅ Trang chủ</a></p>
 
-<table border="1" cellpadding="10">
+<!-- Đã bỏ các thuộc tính border và cellpadding cũ vì CSS sẽ xử lý -->
+<table>
   <tr>
     <th>Chỉ số</th>
     <th>Giá trị</th>
@@ -33,7 +129,7 @@
 
   <tr>
     <td>Tổng doanh thu</td>
-    <td th:text="${totalRevenue} + ' VNĐ'"></td>
+    <td th:text="${#numbers.formatDecimal(totalRevenue, 0, 'COMMA', 0, 'POINT')} + ' VNĐ'"></td>
   </tr>
 </table>
 

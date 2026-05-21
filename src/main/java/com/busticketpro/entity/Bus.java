@@ -31,4 +31,5 @@ public class Bus {
 
     @NotBlank(message = "Tên tài xế không được trống")
     private String driverName;
+    private String companyName;
 }

@@ -2,9 +2,10 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Admin Bus Management</title>
+    <title>Quản lý xe</title>
 
     <style>
+
         body{
             font-family: Arial, sans-serif;
             padding:20px;
@@ -13,6 +14,7 @@
 
         h2{
             margin-bottom:20px;
+            color:#333;
         }
 
         .top-bar{
@@ -30,6 +32,7 @@
             color:white;
             text-decoration:none;
             font-size:14px;
+            font-weight:bold;
         }
 
         .add-btn{
@@ -52,6 +55,7 @@
             width:100%;
             border-collapse: collapse;
             background:white;
+            box-shadow:0 2px 8px rgba(0,0,0,0.1);
         }
 
         th, td{
@@ -63,6 +67,10 @@
         th{
             background:#007bff;
             color:white;
+        }
+
+        tr:nth-child(even){
+            background:#fafafa;
         }
 
         .action-box{
@@ -86,23 +94,25 @@
             background:#f8d7da;
             color:#721c24;
         }
+
     </style>
 </head>
+
 <body>
 
 <div class="top-bar">
 
     <a href="/" class="btn back-btn">
-        ← Back
+        ← Trang chủ
     </a>
 
     <a th:href="@{/admin/buses/new}" class="btn add-btn">
-        + Add Bus
+        + Thêm xe
     </a>
 
 </div>
 
-<h2>Admin Bus Management</h2>
+<h2>Quản lý xe</h2>
 
 <div th:if="${successMessage}" class="message success">
     <span th:text="${successMessage}"></span>
@@ -115,14 +125,17 @@
 <table>
 
     <thead>
+
     <tr>
         <th>ID</th>
-        <th>License Plate</th>
-        <th>Bus Type</th>
-        <th>Total Seats</th>
-        <th>Driver</th>
-        <th>Action</th>
+        <th>Biển số</th>
+        <th>Loại xe</th>
+        <th>Số ghế</th>
+        <th>Hãng xe</th>
+        <th>Tài xế</th>
+        <th>Thao tác</th>
     </tr>
+
     </thead>
 
     <tbody>
@@ -137,6 +150,8 @@
 
         <td th:text="${bus.totalSeats}"></td>
 
+        <td th:text="${bus.companyName}"></td>
+
         <td th:text="${bus.driverName}"></td>
 
         <td>
@@ -145,16 +160,20 @@
 
                 <a th:href="@{'/admin/buses/edit/' + ${bus.id}}"
                    class="btn edit-btn">
-                    Edit
+
+                    Sửa
+
                 </a>
 
-                <form th:action="@{'/admin/buses/delete/' + ${bus.id}}"
+                <form th:action="@{'/admin/buses/' + ${bus.id} + '/delete'}"
                       method="post">
 
                     <button type="submit"
                             class="btn delete-btn"
-                            onclick="return confirm('Delete this bus?')">
-                        Delete
+                            onclick="return confirm('Bạn có chắc muốn xóa xe này?')">
+
+                        Xóa
+
                     </button>
 
                 </form>

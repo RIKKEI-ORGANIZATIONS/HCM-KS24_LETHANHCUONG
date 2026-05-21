@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Tuyến đường</title>
+  <style>
+    /* Reset cơ bản và thiết lập background */
+    body {
+      font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      background-color: #f4f7f6;
+      color: #333;
+      margin: 0;
+      padding: 40px 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    /* Tiêu đề */
+    h2 {
+      color: #2c3e50;
+      font-size: 28px;
+      margin-bottom: 25px;
+    }
+
+    /* Thiết kế Form dạng Card */
+    form {
+      background-color: #ffffff;
+      width: 100%;
+      max-width: 450px;
+      padding: 30px 40px;
+      border-radius: 10px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+      box-sizing: border-box;
+    }
+
+    /* Nhóm các trường nhập liệu */
+    form div {
+      margin-bottom: 20px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Nhãn (Label) */
+    label {
+      font-weight: 600;
+      margin-bottom: 8px;
+      color: #2c3e50;
+      font-size: 15px;
+    }
+
+    /* Ô Select và Input */
+    select, input[type="number"] {
+      width: 100%;
+      padding: 12px 15px;
+      border: 1px solid #dcdfe6;
+      border-radius: 6px;
+      font-size: 15px;
+      color: #333;
+      background-color: #fff;
+      box-sizing: border-box;
+      transition: border-color 0.3s, box-shadow 0.3s;
+    }
+
+    /* Hiệu ứng khi focus (click vào ô nhập) */
+    select:focus, input[type="number"]:focus {
+      outline: none;
+      border-color: #3498db;
+      box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
+    }
+
+    /* Nút Submit (Lưu) */
+    button[type="submit"] {
+      width: 100%;
+      padding: 14px;
+      background-color: #27ae60; /* Màu xanh lá thể hiện hành động Lưu/Thành công */
+      color: #ffffff;
+      border: none;
+      border-radius: 6px;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+      margin-top: 10px;
+      transition: background-color 0.3s, transform 0.2s;
+    }
+
+    /* Hiệu ứng khi hover nút Submit */
+    button[type="submit"]:hover {
+      background-color: #219a52;
+      transform: translateY(-2px);
+    }
+
+    button[type="submit"]:active {
+      transform: translateY(0);
+    }
+  </style>
+</head>
+<body>
+
+<h2>🛣️ Cập nhật Tuyến đường</h2>
+
+<form th:action="@{/admin/routes/save}"
+      th:object="${route}"
+      method="post">
+
+  <input type="hidden" th:field="*{id}">
+
+  <div>
+    <label>Điểm đi</label>
+    <select th:field="*{fromLocation}">
+      <option th:each="l : ${locations}"
+              th:value="${l.id}"
+              th:text="${l.name}">
+      </option>
+    </select>
+  </div>
+
+  <div>
+    <label>Điểm đến</label>
+    <select th:field="*{toLocation}">
+      <option th:each="l : ${locations}"
+              th:value="${l.id}"
+              th:text="${l.name}">
+      </option>
+    </select>
+  </div>
+
+  <div>
+    <label>Khoảng cách (km)</label>
+    <input type="number"
+           th:field="*{distance}"
+           placeholder="Nhập khoảng cách...">
+  </div>
+
+  <button type="submit">
+    Lưu tuyến đường
+  </button>
+
+</form>
+
+</body>
+</html>

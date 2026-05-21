@@ -3,44 +3,212 @@
 <head>
     <meta charset="UTF-8">
     <title>Bus Form</title>
+
+    <style>
+
+        body{
+            font-family: Arial, sans-serif;
+            background:#f5f5f5;
+            padding:30px;
+        }
+
+        .container{
+            width:500px;
+            margin:auto;
+            background:white;
+            padding:30px;
+            border-radius:10px;
+            box-shadow:0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        h2{
+            text-align:center;
+            margin-bottom:25px;
+            color:#333;
+        }
+
+        .form-group{
+            margin-bottom:18px;
+        }
+
+        label{
+            display:block;
+            margin-bottom:8px;
+            font-weight:bold;
+            color:#444;
+        }
+
+        input{
+            width:100%;
+            padding:12px;
+            border:1px solid #ccc;
+            border-radius:6px;
+            font-size:14px;
+            transition:0.3s;
+        }
+
+        input:focus{
+            border-color:#007bff;
+            outline:none;
+            box-shadow:0 0 5px rgba(0,123,255,0.3);
+        }
+
+        .error{
+            color:red;
+            font-size:13px;
+            margin-top:5px;
+        }
+
+        .btn-group{
+            display:flex;
+            gap:10px;
+            margin-top:25px;
+        }
+
+        .btn{
+            flex:1;
+            padding:12px;
+            border:none;
+            border-radius:6px;
+            color:white;
+            font-size:15px;
+            font-weight:bold;
+            cursor:pointer;
+            text-decoration:none;
+            text-align:center;
+        }
+
+        .save-btn{
+            background:#007bff;
+        }
+
+        .save-btn:hover{
+            background:#0056b3;
+        }
+
+        .back-btn{
+            background:#6c757d;
+        }
+
+        .back-btn:hover{
+            background:#545b62;
+        }
+
+    </style>
+
 </head>
 <body>
-<h2 th:text="${bus.id == null ? 'Thêm xe' : 'Sửa xe'}"></h2>
 
-<form th:action="@{${bus.id} != null
+<div class="container">
+
+    <h2 th:text="${bus.id == null ? 'Thêm xe' : 'Sửa xe'}"></h2>
+
+    <form th:action="@{${bus.id} != null
         ? '/admin/buses/update'
         : '/admin/buses/save'}"
-      th:object="${bus}"
-      method="post">
-    <input type="hidden" th:field="*{id}">
+          th:object="${bus}"
+          method="post">
 
-    <div>
-        <label>Biển số</label>
-        <input type="text" th:field="*{licensePlate}">
-        <p th:if="${#fields.hasErrors('licensePlate')}" th:errors="*{licensePlate}" style="color:red"></p>
-    </div>
+        <input type="hidden" th:field="*{id}">
 
-    <div>
-        <label>Loại xe</label>
-        <input type="text" th:field="*{busType}">
-        <p th:if="${#fields.hasErrors('busType')}" th:errors="*{busType}" style="color:red"></p>
-    </div>
+        <!-- BIỂN SỐ -->
 
-    <div>
-        <label>Số ghế</label>
-        <input type="number" th:field="*{totalSeats}">
-        <p th:if="${#fields.hasErrors('totalSeats')}" th:errors="*{totalSeats}" style="color:red"></p>
-    </div>
+        <div class="form-group">
 
-    <div>
-        <label>Tài xế</label>
-        <input type="text" th:field="*{driverName}">
-        <p th:if="${#fields.hasErrors('driverName')}" th:errors="*{driverName}" style="color:red"></p>
-    </div>
+            <label>Biển số</label>
 
-    <button type="submit">Lưu</button>
-</form>
+            <input type="text"
+                   th:field="*{licensePlate}">
 
-<p><a th:href="@{/admin/buses}">Quay lại</a></p>
+            <p class="error"
+               th:if="${#fields.hasErrors('licensePlate')}"
+               th:errors="*{licensePlate}">
+            </p>
+
+        </div>
+
+        <!-- LOẠI XE -->
+
+        <div class="form-group">
+
+            <label>Loại xe</label>
+
+            <input type="text"
+                   th:field="*{busType}">
+
+            <p class="error"
+               th:if="${#fields.hasErrors('busType')}"
+               th:errors="*{busType}">
+            </p>
+
+        </div>
+
+        <!-- SỐ GHẾ -->
+
+        <div class="form-group">
+
+            <label>Số ghế</label>
+
+            <input type="number"
+                   th:field="*{totalSeats}">
+
+            <p class="error"
+               th:if="${#fields.hasErrors('totalSeats')}"
+               th:errors="*{totalSeats}">
+            </p>
+
+        </div>
+
+        <!-- HÃNG XE -->
+
+        <div class="form-group">
+
+            <label>Hãng xe</label>
+
+            <input type="text"
+                   th:field="*{companyName}">
+
+        </div>
+
+        <!-- TÀI XẾ -->
+
+        <div class="form-group">
+
+            <label>Tài xế</label>
+
+            <input type="text"
+                   th:field="*{driverName}">
+
+            <p class="error"
+               th:if="${#fields.hasErrors('driverName')}"
+               th:errors="*{driverName}">
+            </p>
+
+        </div>
+
+        <!-- BUTTON -->
+
+        <div class="btn-group">
+
+            <button type="submit"
+                    class="btn save-btn">
+
+                Lưu
+
+            </button>
+
+            <a th:href="@{/admin/buses}"
+               class="btn back-btn">
+
+                Quay lại
+
+            </a>
+
+        </div>
+
+    </form>
+
+</div>
+
 </body>
 </html>

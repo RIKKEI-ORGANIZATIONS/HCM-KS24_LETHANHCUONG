@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Quản lý tuyến đường</title>
+  <style>
+    /* Reset cơ bản */
+    body {
+      font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      background-color: #f4f7f6;
+      color: #333;
+      margin: 0;
+      padding: 40px 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    /* Khung chứa nội dung để căn giữa và giới hạn độ rộng */
+    .container {
+      width: 100%;
+      max-width: 900px; /* Bảng danh sách thường cần rộng hơn form */
+    }
+
+    /* Phần Tiêu đề và Nút thêm mới cùng nằm trên 1 hàng */
+    .header-actions {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    h2 {
+      color: #2c3e50;
+      font-size: 28px;
+      margin: 0;
+    }
+
+    /* Nút Thêm mới */
+    .btn-add {
+      display: inline-block;
+      text-decoration: none;
+      background-color: #3498db;
+      color: #ffffff;
+      padding: 10px 20px;
+      border-radius: 6px;
+      font-weight: 600;
+      font-size: 15px;
+      transition: background-color 0.3s, transform 0.2s;
+      box-shadow: 0 2px 5px rgba(52, 152, 219, 0.3);
+    }
+
+    .btn-add:hover {
+      background-color: #2980b9;
+      transform: translateY(-2px);
+    }
+
+    /* Bảng dữ liệu */
+    table {
+      border-collapse: collapse;
+      width: 100%;
+      background-color: #ffffff;
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+    }
+
+    th {
+      background-color: #2c3e50;
+      color: #ffffff;
+      text-align: left;
+      padding: 16px 20px;
+      font-size: 15px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    td {
+      padding: 16px 20px;
+      border-bottom: 1px solid #eef0f2;
+      font-size: 15px;
+      vertical-align: middle;
+    }
+
+    /* Cột khoảng cách căn phải */
+    th:nth-child(4), td:nth-child(4) {
+      text-align: right;
+    }
+
+    /* Hiệu ứng sọc ngựa vằn và hover */
+    tr:nth-child(even) td {
+      background-color: #fdfdfd;
+    }
+
+    tr:hover td {
+      background-color: #f4f6f7;
+      transition: background-color 0.2s ease;
+    }
+
+    tr:last-child td {
+      border-bottom: none;
+    }
+
+    /* Các nút Hành động (Sửa, Xóa) */
+    .btn-action {
+      display: inline-block;
+      text-decoration: none;
+      padding: 6px 12px;
+      border-radius: 4px;
+      font-size: 13px;
+      font-weight: 600;
+      margin-right: 5px;
+      transition: opacity 0.2s;
+    }
+
+    .btn-action:hover {
+      opacity: 0.85;
+    }
+
+    .btn-edit {
+      background-color: #f39c12; /* Màu cam cho hành động sửa */
+      color: white;
+    }
+
+    .btn-delete {
+      background-color: #e74c3c; /* Màu đỏ cho hành động xóa */
+      color: white;
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+
+  <div class="header-actions">
+    <h2>🗺️ Danh sách tuyến đường</h2>
+    <a th:href="@{/admin/routes/create}" class="btn-add">
+      + Thêm tuyến
+    </a>
+  </div>
+
+  <table>
+    <tr>
+      <th>ID</th>
+      <th>Điểm đi</th>
+      <th>Điểm đến</th>
+      <th>Khoảng cách</th>
+      <th>Thao tác</th>
+    </tr>
+
+    <tr th:each="r : ${routes}">
+      <td th:text="${r.id}"></td>
+      <td th:text="${r.fromLocation.name}"></td>
+      <td th:text="${r.toLocation.name}"></td>
+      <td th:text="${r.distance} + ' km'"></td>
+      <td>
+        <a th:href="@{'/admin/routes/' + ${r.id} + '/edit'}" class="btn-action btn-edit">
+          Sửa
+        </a>
+        <a th:href="@{'/admin/routes/' + ${r.id} + '/delete'}" class="btn-action btn-delete" onclick="return confirm('Bạn có chắc chắn muốn xóa tuyến đường này?');">
+          Xóa
+        </a>
+      </td>
+    </tr>
+  </table>
+
+</div>
+
+</body>
+</html>

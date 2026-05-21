@@ -1,39 +1,28 @@
-package com.busticketpro.entity;
+package com.busticketpro.dto;
 
-import jakarta.persistence.*;
-import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.Future;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
 
-@Entity
 @Getter
 @Setter
-@Table(name = "trips")
-public class Trip {
+public class TripForm {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
-    @ManyToOne
-    @JoinColumn(name = "route_id")
     @NotNull(message = "Vui lòng chọn tuyến đường")
-    private Route route;
+    private Long routeId;
 
-    @ManyToOne
-    @JoinColumn(name = "bus_id")
     @NotNull(message = "Vui lòng chọn xe")
-    private Bus bus;
+    private Long busId;
 
     @NotNull(message = "Vui lòng chọn giờ khởi hành")
     @Future(message = "Giờ khởi hành phải ở tương lai")
     private LocalDateTime departureTime;
 
     @NotNull(message = "Vui lòng nhập giá vé")
-    @DecimalMin(value = "1000", message = "Giá vé phải lớn hơn 1000")
+    @Min(value = 1000, message = "Giá vé không hợp lệ")
     private Double price;
 }

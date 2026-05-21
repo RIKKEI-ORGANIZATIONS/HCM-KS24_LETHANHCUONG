@@ -456,7 +456,14 @@
                     <!-- ADMIN -->
                     <span class="nav-group" sec:authorize="hasRole('ADMIN')">
                         <a class="nav-link" th:href="@{/admin/buses}">Quản lý xe</a>
+                        <a class="nav-link" th:href="@{/admin/routes}">
+    Quản lý tuyến
+</a>
+                        <a class="nav-link" th:href="@{/admin/trips}">
+    Quản lý chuyến xe
+</a>
                         <a class="nav-link" th:href="@{/admin/report}">Báo cáo</a>
+
                     </span>
 
                     <!-- STAFF -->
@@ -567,7 +574,8 @@
                             </td>
 
                             <td>
-                                <span class="time-badge" th:text="${trip.departureTime}"></span>
+                                <span class="time-badge" th:text="${#temporals.format(trip.departureTime, 'dd/MM/yyyy HH:mm')}">
+                            </span>
                             </td>
 
                             <td>

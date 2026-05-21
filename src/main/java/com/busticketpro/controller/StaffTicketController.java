@@ -19,7 +19,7 @@ public class StaffTicketController {
 
         model.addAttribute("pendingTickets", ticketService.findPendingTickets());
         model.addAttribute("confirmedTickets", ticketService.findConfirmedTickets());
-
+        model.addAttribute( "cancelledTickets", ticketService.findCancelledTickets() );
         return "staff/pending";
     }
 
@@ -46,4 +46,6 @@ public class StaffTicketController {
         }
         return "redirect:/staff/tickets";
     }
+
+
 }

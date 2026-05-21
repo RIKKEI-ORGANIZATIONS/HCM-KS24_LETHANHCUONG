@@ -245,6 +245,59 @@
 
   </tr>
 
+  <!-- ================= VÉ ĐÃ HỦY ================= -->
+
+  <h2>Danh sách vé đã hủy</h2>
+
+  <table>
+
+    <thead>
+    <tr>
+      <th>Mã vé</th>
+      <th>Khách hàng</th>
+      <th>SĐT</th>
+      <th>Email</th>
+      <th>Tuyến xe</th>
+      <th>Giờ khởi hành</th>
+      <th>Biển số xe</th>
+      <th>Ghế</th>
+      <th>Tổng tiền</th>
+      <th>Trạng thái</th>
+    </tr>
+    </thead>
+
+    <tbody>
+
+    <tr th:each="ticket : ${cancelledTickets}">
+
+      <td th:text="${ticket.ticketCode}"></td>
+
+      <td th:text="${ticket.customerName}"></td>
+
+      <td th:text="${ticket.phone}"></td>
+
+      <td th:text="${ticket.email}"></td>
+
+      <td th:text="${ticket.trip.route.fromLocation.name + ' → ' + ticket.trip.route.toLocation.name}"></td>
+
+      <td th:text="${ticket.trip.departureTime}"></td>
+
+      <td th:text="${ticket.trip.bus.licensePlate}"></td>
+
+      <td th:text="${ticket.seat.seatNumber}"></td>
+
+      <td th:text="${#numbers.formatDecimal(ticket.totalPrice, 0, 'COMMA', 0, 'POINT') + ' VNĐ'}"></td>
+
+      <td>
+        <span class="cancelled">ĐÃ HỦY</span>
+      </td>
+
+    </tr>
+
+    </tbody>
+
+  </table>
+
   </tbody>
 
 </table>
