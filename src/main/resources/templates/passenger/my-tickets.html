@@ -126,7 +126,7 @@
 
         <td th:text="${ticket.seat.seatNumber}"></td>
 
-        <td th:text="${ticket.trip.departureTime}"></td>
+        <td th:text="${#temporals.format(ticket.trip.departureTime, 'HH:mm dd/MM/yyyy')}"></td>
 
         <td th:text="${ticket.totalPrice}"></td>
 
